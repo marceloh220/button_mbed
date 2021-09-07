@@ -37,7 +37,7 @@ public:
      *  @param mode the initial mode of the pin
      */
     Button(PinName pin, PinMode mode = PullDown) : in(pin, mode) {
-  
+        tim.start();
     }
     inline void mode(PinMode mode) {
         in.mode(mode);
@@ -50,19 +50,16 @@ public:
      *    An boolean representing the state of the button,
      */
     bool read() {
-        tim.stop();
         long long elapsed =  std::chrono::duration_cast<std::chrono::milliseconds>(tim.elapsed_time()).count();
         if(in && !state && elapsed > 30) {
             state = true;
             tim.reset();
-            tim.start();
             return true;
         }
         if(!in && state && elapsed > 30) {
             state = false;
             tim.reset();
         }
-        tim.start();
         return false;
     }
 
@@ -70,6 +67,7 @@ public:
      *
      *  @returns
      *    An long long representing the time of pressed button in milliseconds,
+     *    Using this method disables the read or operator int method.
 	 *
 	 * \sa Button::pressedTime()
      * @code
@@ -82,11 +80,10 @@ public:
     long long pressedTime() {
         if(in && !this->state) {
 		    this->state = 1;
-            tim.start();
+            tim.reset();
 	    }
 	    else if(!in && this->state) {
 		    this->state = 0;
-            tim.stop();
 		    long long elapsed =  std::chrono::duration_cast<std::chrono::milliseconds>(tim.elapsed_time()).count();
             tim.reset();
             return elapsed;
