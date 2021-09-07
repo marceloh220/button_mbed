@@ -39,6 +39,11 @@ public:
     Button(PinName pin, PinMode mode = PullDown) : in(pin, mode) {
         tim.start();
     }
+	
+	/** Set the input pin mode
+     *
+     *  @param pull PullUp, PullDown, PullNone, OpenDrain
+     */
     inline void mode(PinMode mode) {
         in.mode(mode);
     }
